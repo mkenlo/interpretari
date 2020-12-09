@@ -47,6 +47,7 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
               return Center(child: CircularProgressIndicator());
             case ConnectionState.done:
               if (snapshot.hasError) {
+                // TODO Add a proper error Widget
                 //return ErrorScreen(errorType.exception);
                 return Text(snapshot.error.toString());
               }
@@ -62,25 +63,22 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
         itemCount: data.length,
         itemBuilder: (context, index) {
           Sentence item = data[index];
-          //return SentenceItem(phrase: item, index: index+1);
           return ListTile(
-            onTap: () {
-              _navigateToRecordingPage(item);
-            },
-            leading: FaIcon(
-              FontAwesomeIcons.quoteLeft,
-              color: Theme.of(context).primaryColorLight,
-            ),
-            focusColor: Theme.of(context).primaryColorLight,
-            hoverColor: Theme.of(context).primaryColorLight,
-            //contentPadding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING),
-            title: Text(
-              item.text,
-              style: TextStyle(fontSize: 18.0),
-            ),
-            subtitle: Text(item.language),
-            // trailing: IconButton(icon: Icon(Icons.mic), onPressed: () {}),
-          );
+              onTap: () {
+                _navigateToRecordingPage(item);
+              },
+              trailing: FaIcon(
+                FontAwesomeIcons.quoteRight,
+                size: 16.0,
+                color: Theme.of(context).primaryColorLight,
+              ),
+              focusColor: Theme.of(context).primaryColorLight,
+              hoverColor: Theme.of(context).primaryColorLight,
+              title: Text(
+                item.text,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              subtitle: Text(item.language));
         });
   }
 
@@ -102,17 +100,7 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
   @override
   Widget build(BuildContext context) {
     final appBar = AppBar(
-        centerTitle: true,
-        elevation: 0.0,
-        title: Text("Sentences"),
-        actions: [
-          FlatButton.icon(
-              label: Text(""),
-              onPressed: () {
-                print("More button was pressed");
-              },
-              icon: Icon(Icons.more_vert, color: Colors.white))
-        ]);
+        centerTitle: true, elevation: 1.0, title: Text(TITLE_SENTENCE_APPBAR));
     final content = RefreshIndicator(
         child: _loadSentencesWidget(),
         key: _refreshIndicatorKey,

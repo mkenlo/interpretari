@@ -179,8 +179,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
             ),
             centerTitle: true,
             elevation: 0,
-            title: Text(TITLE_PREF_APPBAR,
-                style: TextStyle(color: Colors.black87)),
+            title: Text(TITLE_PREF_APPBAR),
             actions: [
               Padding(
                   padding: EdgeInsets.all(DEFAULT_PADDING),

@@ -1,6 +1,6 @@
 /* ----------- Screen AppBar Title ------------ */
 const String TITLE_PREF_APPBAR = "Preferences";
-
+const String TITLE_SENTENCE_APPBAR = "Sentences";
 /* ----------- End Screen AppBar Title ----------*/
 
 /* ------------ Buttons Labels ----------------*/
