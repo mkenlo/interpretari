@@ -28,11 +28,8 @@ class PreferenceScreenState extends State<PreferenceScreen> {
 
     return DropdownButtonFormField(
       decoration: InputDecoration(
-        focusColor: Colors.amber,
         labelText: hint,
-        border: OutlineInputBorder(
-            borderSide:
-                BorderSide(style: BorderStyle.solid, color: Colors.white)),
+        border: OutlineInputBorder(),
       ),
       value: (languageType == "source")
           ? _preferredSourceLang
@@ -147,8 +144,8 @@ class PreferenceScreenState extends State<PreferenceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO export this button widget as a custom button for the app. This code is used on another page
     final doneButton = Container(
-        margin: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
         padding: EdgeInsets.all(4.0),
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColorDark,
@@ -197,9 +194,10 @@ class PreferenceScreenState extends State<PreferenceScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Padding(
-                      child: Text(LABEL_PREF_HEADER),
-                      padding: EdgeInsets.symmetric(vertical: 24.0)),
+                  Expanded(
+                      child: Center(
+                          child: Text(LABEL_PREF_HEADER,
+                              style: Theme.of(context).textTheme.headline5))),
                   Padding(
                     padding: EdgeInsets.all(DEFAULT_PADDING),
                     child: _buildLanguageDropDown("source"),
@@ -208,9 +206,10 @@ class PreferenceScreenState extends State<PreferenceScreen> {
                     padding: EdgeInsets.all(DEFAULT_PADDING),
                     child: _buildLanguageDropDown("target"),
                   ),
-                  Padding(
-                      child: Text("Permission"),
-                      padding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING)),
+                  Expanded(
+                      child: Center(
+                          child: Text(LABEL_SET_PERMISSIONS,
+                              style: Theme.of(context).textTheme.headline5))),
                   Padding(
                       child: _buildPermissionWidget(),
                       padding: EdgeInsets.all(DEFAULT_PADDING)),

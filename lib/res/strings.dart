@@ -11,6 +11,7 @@ const String BTN_APPLY = "Apply";
 const String LABEL_PREF_HEADER = "Choose preferred languages";
 const String LABEL_PREF_MSG_CHOICE = "Please select your languages";
 const String LABEL_ACKNOW = "OK";
+const String LABEL_SET_PERMISSIONS = "Permissions";
 /* ------------ End Text Labels ------*/
 /*------------- Route Name ------------*/
 const String ROUTE_HOME = "/";
