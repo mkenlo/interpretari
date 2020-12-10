@@ -1,22 +1,25 @@
-import 'dart:io' show File, Directory;
+import 'dart:io' show File;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../components/sentence_card_widget.dart';
+import '../components/translator_language_widget.dart';
 import '../config.dart';
 import '../models/sentence_model.dart';
+import '../res/colors.dart';
 import '../res/dimensions.dart';
+import '../res/strings.dart';
+import '../services/audio_service.dart';
 import '../services/permission_service.dart';
 
 class TranslationScreen extends StatefulWidget {
-  Sentence sentence;
+  final Sentence sentence;
   @override
   State createState() {
     return TranslationScreenState();
@@ -31,19 +34,9 @@ class TranslationScreenState extends State<TranslationScreen> {
   double _recorderIconSize = 60.0;
   FlutterSoundRecorder _flutterSound;
   String _author = dummyUserName;
-  String _targetLang = "francais";
-  String _sourceLanguage = "english";
-  String _appDirectory;
+  String _targetLang = "";
+  String _sourceLanguage = "";
   String _recordedFilePath = "";
-  Sentence _currentSentence;
-  int _progression = 0;
-  PageController _pageController;
-
-  final Map<String, Color> _isRecordingColor = {
-    "accent": Colors.red[600],
-    "primaryLight": Colors.red[100],
-    "primaryDark": Colors.red[800]
-  };
 
   void _getPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -51,20 +44,12 @@ class TranslationScreenState extends State<TranslationScreen> {
       this._author = prefs.getString("username");
       this._sourceLanguage = prefs.getString("sourceLanguage");
       this._targetLang = prefs.getString("targetLanguage");
-      this._appDirectory = prefs.getString("appDirPath");
     });
-  }
-
-  Future<String> _createAudioRecordingFile(String filename) async {
-    final Directory appDir = await getExternalStorageDirectory();
-    final String filePath = appDir.path + "/$filename.$appFileExtension";
-    File(filePath).createSync();
-    return filePath;
   }
 
   void _startRecording() async {
     String filePath =
-        await _createAudioRecordingFile("sentence${widget.sentence.id}");
+        await createAudioRecordingFile("sentence${widget.sentence.id}");
     await _flutterSound.openAudioSession();
     await _flutterSound.startRecorder(toFile: filePath); // startRecorder
 
@@ -123,7 +108,7 @@ class TranslationScreenState extends State<TranslationScreen> {
               content: Text("Are you satisfied with your recording?"),
               actions: <Widget>[
                 FlatButton(
-                  color: _isRecordingColor["primaryDark"],
+                  color: isRecordingColor["primaryDark"],
                   textColor: Colors.white,
                   child: Text('No'),
                   onPressed: () {
@@ -144,17 +129,17 @@ class TranslationScreenState extends State<TranslationScreen> {
         });
   }
 
-  Widget _buildRecorderWidget() {
+  Widget recorderWidget() {
     Widget stopIcon = Icon(Icons.stop,
-        size: _recorderIconSize, color: _isRecordingColor["accent"]);
+        size: _recorderIconSize, color: isRecordingColor["accent"]);
     Widget micIcon = Icon(Icons.mic,
         size: _recorderIconSize, color: Theme.of(context).accentColor);
 
     Color darkColor = Theme.of(context).primaryColorDark;
     Color lightColor = Theme.of(context).primaryColorLight;
     if (_isRecording) {
-      darkColor = _isRecordingColor["primaryDark"];
-      lightColor = _isRecordingColor["primaryLight"];
+      darkColor = isRecordingColor["primaryDark"];
+      lightColor = isRecordingColor["primaryLight"];
     }
 
     Widget recorder = GestureDetector(
@@ -168,10 +153,10 @@ class TranslationScreenState extends State<TranslationScreen> {
         },
         child: Container(
             child: _flutterSound.isRecording ? stopIcon : micIcon,
-            padding: new EdgeInsets.all(10.0),
-            decoration: new BoxDecoration(
-                border: new Border.all(color: darkColor, width: 1.0),
-                borderRadius: new BorderRadius.circular(80.0),
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+                border: Border.all(color: darkColor, width: 1.0),
+                borderRadius: BorderRadius.circular(80.0),
                 color: lightColor,
                 boxShadow: [
                   new BoxShadow(color: darkColor, blurRadius: 20.0)
@@ -180,48 +165,7 @@ class TranslationScreenState extends State<TranslationScreen> {
     return recorder;
   }
 
-  Widget _buildControlsWidget() {
-    final textStyle = TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18.0,
-        color: Theme.of(context).primaryColorDark);
-
-    final controls = Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        padding: EdgeInsets.symmetric(
-            horizontal: DEFAULT_PADDING, vertical: DEFAULT_PADDING / 2),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(_sourceLanguage ?? "", style: textStyle),
-          _buildRecorderWidget(),
-          Text(_targetLang ?? "", style: textStyle),
-        ]));
-    return Padding(padding: EdgeInsets.all(DEFAULT_PADDING), child: controls);
-  }
-
-  Widget _buildSentenceCard(Sentence phrase) {
-    return Card(
-        elevation: 1.0,
-        child: Container(
-            height: MediaQuery.of(context).size.height / 2,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(DEFAULT_PADDING),
-            child: Center(
-                child: Text(
-              phrase.text,
-              style: GoogleFonts.overlock(
-                  textStyle: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      letterSpacing: 1.75,
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold)),
-            ))));
-  }
-
-  Widget _buildTimerWidget() {
+  Widget timerWidget() {
     return Padding(
       padding: const EdgeInsets.all(DEFAULT_PADDING),
       child: Text("$_recorderTimer", style: TextStyle(fontSize: 30.0)),
@@ -249,46 +193,24 @@ class TranslationScreenState extends State<TranslationScreen> {
   Widget build(BuildContext context) {
     final content = Container(
         padding: EdgeInsets.all(DEFAULT_PADDING),
-        color: Color(0xFFF3F8F7),
+        color: bgPrimaryColor,
         child: Column(children: [
-          Column(
-            children: [
-              Padding(
-                  padding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING),
-                  child: FaIcon(FontAwesomeIcons.lightbulb)),
-              Wrap(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: DEFAULT_PADDING),
-                    child: Text(
-                      "Tap on the microphone to record your translation of this sentence",
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-          Expanded(child: _buildSentenceCard(widget.sentence)),
-          _buildTimerWidget(),
-          _buildControlsWidget()
+          TranslatorLanguageWidget(_sourceLanguage, _targetLang),
+          ListTile(
+              leading: FaIcon(FontAwesomeIcons.lightbulb),
+              title: Text(LABEL_RECORDING_INSTRUCTIONS,
+                  style: Theme.of(context).textTheme.caption),
+              contentPadding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING)),
+          SentenceCardWidget(widget.sentence),
+          timerWidget(),
+          recorderWidget(),
         ]));
 
-    //return content;
     return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
         appBar: AppBar(
             centerTitle: true,
-            title: Text("Recorder"),
-            elevation: 0,
-            actions: [
-              FlatButton.icon(
-                  label: Text(""),
-                  onPressed: () {
-                    print("More button was pressed");
-                  },
-                  icon: Icon(Icons.more_vert, color: Colors.white))
-            ]),
+            title: Text(TITLE_RECORDER_APPBAR),
+            elevation: 1.0),
         body: content);
   }
 }

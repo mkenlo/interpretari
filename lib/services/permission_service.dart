@@ -19,13 +19,3 @@ Future<bool> requestAppPermission() async {
 
   return granted;
 }
-
-/*void createAppStorage() async {
-  print("create app storage");
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  final Directory extDir = await getExternalStorageDirectory();
-  final String appDirPath = extDir.path + "/" + packageInfo.appName;
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('appDirPath', appDirPath);
-  Directory(appDirPath).createSync();
-}*/

@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import "../models/sentence_model.dart";
+import '../res/colors.dart';
 import '../res/strings.dart';
 import "../services/sentence_service.dart";
 import 'drawer_widget.dart';
@@ -59,7 +60,10 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
   }
 
   Widget _buildListWidget(data) {
-    return ListView.builder(
+    return ListView.separated(
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
         itemCount: data.length,
         itemBuilder: (context, index) {
           Sentence item = data[index];
@@ -107,7 +111,10 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
         onRefresh: () => _refreshList());
     return Scaffold(
       appBar: appBar,
-      body: content,
+      body: Container(
+        child: content,
+        color: bgPrimaryColor,
+      ),
       drawer: Drawer(child: DrawerWidget()),
     );
   }
