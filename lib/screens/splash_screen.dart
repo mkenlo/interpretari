@@ -17,7 +17,7 @@ class SplashScreenState extends State<SplashScreen> {
     return Scaffold(
         backgroundColor: Theme.of(context).primaryColorDark,
         body: Center(
-          child: Text("Interpretari",
+          child: Text(APPNAME,
               style: GoogleFonts.patuaOne(color: Colors.white, fontSize: 36.0)),
         ));
   }
@@ -26,9 +26,9 @@ class SplashScreenState extends State<SplashScreen> {
     SharedPreferences.getInstance().then((prefInstance) {
       if (prefInstance.containsKey("sourceLanguage") ||
           prefInstance.containsKey("targetLanguage")) {
-        Navigator.of(context).pushNamed(ROUTE_SENTENCES_LIST);
+        Navigator.of(context).pushNamed(ROUTE_DASHBOARD);
       } else {
-        Navigator.of(context).pushNamed(ROUTE_PREFS);
+        Navigator.of(context).pushNamed(ROUTE_ONBOARDING);
       }
     });
   }

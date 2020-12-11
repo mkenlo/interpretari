@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/translation_model.dart';
@@ -92,6 +93,12 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
       },
     );
 
-    return Center(child: content);
+    return Scaffold(
+        appBar: AppBar(
+            leading: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: FaIcon(FontAwesomeIcons.language),
+        )),
+        body: Center(child: content));
   }
 }

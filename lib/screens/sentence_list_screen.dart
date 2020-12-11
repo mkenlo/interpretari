@@ -9,7 +9,6 @@ import "../models/sentence_model.dart";
 import '../res/colors.dart';
 import '../res/strings.dart';
 import "../services/sentence_service.dart";
-import 'drawer_widget.dart';
 import 'error_screen.dart';
 
 class SentenceListScreen extends StatefulWidget {
@@ -110,12 +109,10 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
         key: _refreshIndicatorKey,
         onRefresh: () => _refreshList());
     return Scaffold(
-      appBar: appBar,
-      body: Container(
-        child: content,
-        color: bgPrimaryColor,
-      ),
-      drawer: Drawer(child: DrawerWidget()),
-    );
+        appBar: appBar,
+        body: Container(
+          child: content,
+          color: bgPrimaryColor,
+        ));
   }
 }

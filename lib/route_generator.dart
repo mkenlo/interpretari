@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'res/strings.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/sentence_list_screen.dart';
 import 'screens/signin_screen.dart';
-import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/translation_list_screen.dart';
 import 'screens/translation_screen.dart';
@@ -30,12 +31,14 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SplashScreen());
       case ROUTE_SIGNIN:
         return MaterialPageRoute(builder: (_) => SignInScreen());
-      case ROUTE_SIGNUP:
-        return MaterialPageRoute(builder: (_) => SignUpScreen());
       case ROUTE_TRANSLATIONS_LIST:
         return MaterialPageRoute(builder: (_) => TranslationListScreen());
+      case ROUTE_HOME:
+        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case ROUTE_ONBOARDING:
+        return MaterialPageRoute(builder: (_) => OnBoardingScreen());
       default:
-        return MaterialPageRoute(builder: (_) => SentenceListScreen());
+        return MaterialPageRoute(builder: (_) => HomeScreen());
     }
   }
 }

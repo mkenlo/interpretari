@@ -1,3 +1,5 @@
+const String APPNAME = "Interpretari";
+
 /* ----------- Screen AppBar Title ------------ */
 const String TITLE_PREF_APPBAR = "Preferences";
 const String TITLE_SENTENCE_APPBAR = "Sentences";
@@ -17,16 +19,17 @@ const String LABEL_RECORDING_INSTRUCTIONS =
     "Tap on the microphone to record your translation of this sentence";
 /* ------------ End Text Labels ------*/
 /*------------- Route Name ------------*/
-const String ROUTE_HOME = "/";
-const String ROUTE_PREFS = "/preferences";
-const String ROUTE_DASHBOARD = "/dashboard";
-const String ROUTE_SENTENCES_LIST = "/sentences";
-const String ROUTE_TRANSLATE_SENTENCE = "/translate";
-const String ROUTE_SPLASH = "/splash";
-const String ROUTE_USERPROFILE = "/profile";
-const String ROUTE_SIGNIN = "/signin";
-const String ROUTE_SIGNUP = "/signup";
-const String ROUTE_TRANSLATIONS_LIST = "/translations";
+const String ROUTE_HOME = "Home";
+const String ROUTE_PREFS = "Preferences";
+const String ROUTE_DASHBOARD = "Dashboard";
+const String ROUTE_SENTENCES_LIST = "Sentences";
+const String ROUTE_TRANSLATE_SENTENCE = "Translate";
+const String ROUTE_SPLASH = "Splash";
+const String ROUTE_USERPROFILE = "Profile";
+const String ROUTE_SIGNIN = "Signin";
+const String ROUTE_SIGNUP = "Signup";
+const String ROUTE_TRANSLATIONS_LIST = "Translations";
+const String ROUTE_ONBOARDING = "onBoarding";
 /*-------------End Route Name ---------*/
 /*------------ Login Screen -----------*/
 const String WELCOME_MESSAGE = "Welcome to Lingua";

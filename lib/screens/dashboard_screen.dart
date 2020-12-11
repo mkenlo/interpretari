@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'sentence_list_screen.dart';
+import '../res/strings.dart';
+import 'home_screen.dart';
+import 'translation_list_screen.dart';
 import 'userprofile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -11,8 +14,6 @@ class DashboardScreen extends StatefulWidget {
 
 class DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
-  List<String> _pagesTitle = ["Translate", "My Translations", "Profile"];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -22,42 +23,34 @@ class DashboardScreenState extends State<DashboardScreen> {
   Widget getPage(int index) {
     switch (index) {
       case 0:
-        return SentenceListScreen();
+        return HomeScreen();
       case 1:
-        return Text("User List Translations Screen");
+        return TranslationListScreen();
       case 2:
         return UserProfileScreen();
+      default:
+        return HomeScreen();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bottom = BottomNavigationBar(
-      backgroundColor: Theme.of(context).primaryColorDark,
       selectedItemColor: Theme.of(context).accentColor,
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          title: Text('Home'),
-        ),
+            icon: FaIcon(FontAwesomeIcons.home), label: ROUTE_HOME),
         BottomNavigationBarItem(
-          icon: Icon(Icons.translate),
-          title: Text('My Translations'),
-        ),
+            icon: FaIcon(FontAwesomeIcons.language),
+            label: ROUTE_TRANSLATIONS_LIST),
         BottomNavigationBarItem(
-          icon: Icon(Icons.account_circle),
-          title: Text('Me'),
-        ),
+            icon: FaIcon(FontAwesomeIcons.userCircle),
+            label: ROUTE_USERPROFILE),
       ],
     );
 
-    return Scaffold(
-        /* appBar: AppBar(
-          title: Text(_pagesTitle[_selectedIndex]),
-        ),*/
-        body: getPage(_selectedIndex),
-        bottomNavigationBar: bottom);
+    return Scaffold(body: getPage(_selectedIndex), bottomNavigationBar: bottom);
   }
 }

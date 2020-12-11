@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import "package:flutter/material.dart";
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config.dart';
 import '../models/user_model.dart';
 import '../services/language_service.dart';
-import 'drawer_widget.dart';
 import 'error_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -231,8 +231,12 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     );
 
     return Scaffold(
-        appBar: AppBar(title: Text("Settings")),
-        body: content,
-        drawer: Drawer(child: DrawerWidget()));
+        appBar: AppBar(
+            title: Text("Settings"),
+            leading: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FaIcon(FontAwesomeIcons.slidersH),
+            )),
+        body: content);
   }
 }

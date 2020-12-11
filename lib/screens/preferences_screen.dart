@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/language_model.dart';
+import '../res/colors.dart';
 import '../res/dimensions.dart';
 import '../res/strings.dart';
 import '../services/language_service.dart';
@@ -27,29 +28,26 @@ class PreferenceScreenState extends State<PreferenceScreen> {
         (languageType == "source") ? "Source Language" : "Target Language";
 
     return DropdownButtonFormField(
-      decoration: InputDecoration(
-        labelText: hint,
-        border: OutlineInputBorder(),
-      ),
-      value: (languageType == "source")
-          ? _preferredSourceLang
-          : _preferredTargetLang,
-      onChanged: (selected) {
-        setState(() {
-          if (languageType == "target") {
-            _preferredTargetLang = selected;
-          } else if (languageType == "source") {
-            _preferredSourceLang = selected;
-          }
-        });
-      },
-      items: data.map<DropdownMenuItem>((lang) {
-        return DropdownMenuItem<String>(
-          value: lang.name,
-          child: Text(lang.name),
-        );
-      }).toList(),
-    );
+        decoration:
+            InputDecoration(labelText: hint, border: OutlineInputBorder()),
+        value: (languageType == "source")
+            ? _preferredSourceLang
+            : _preferredTargetLang,
+        onChanged: (selected) {
+          setState(() {
+            if (languageType == "target") {
+              _preferredTargetLang = selected;
+            } else if (languageType == "source") {
+              _preferredSourceLang = selected;
+            }
+          });
+        },
+        items: data.map<DropdownMenuItem>((lang) {
+          return DropdownMenuItem<String>(
+            value: lang.name,
+            child: Text(lang.name),
+          );
+        }).toList());
   }
 
   Widget _buildLanguageDropDown(String languageType) {
@@ -76,12 +74,11 @@ class PreferenceScreenState extends State<PreferenceScreen> {
         });
   }
 
-  void _navigateToRecordingPage() {
+  void _navigateToHomePage() {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
-
-    Navigator.of(context).pushNamed(ROUTE_DASHBOARD);
+    Navigator.of(context).pushNamed(ROUTE_SIGNIN);
   }
 
   void _askForPreferences() {
@@ -155,7 +152,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
             onPressed: () {
               //Permission.storage.isGranted.then((value) => createAppStorage());
               _setLanguagesPreferences().then((isLanguageSaved) {
-                if (isLanguageSaved) _navigateToRecordingPage();
+                if (isLanguageSaved) _navigateToHomePage();
               });
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -170,24 +167,17 @@ class PreferenceScreenState extends State<PreferenceScreen> {
             ])));
 
     return Scaffold(
-        // backgroundColor: Colors.white,
         appBar: AppBar(
             leading: Padding(
-              padding: EdgeInsets.all(DEFAULT_PADDING),
-              child: FaIcon(FontAwesomeIcons.slidersH,
-                  color: Theme.of(context).primaryColorDark),
-            ),
+                padding: EdgeInsets.all(DEFAULT_PADDING),
+                child: FaIcon(FontAwesomeIcons.slidersH)),
             centerTitle: true,
             elevation: 0,
-            title: Text(TITLE_PREF_APPBAR),
-            actions: [
-              Padding(
-                  padding: EdgeInsets.all(DEFAULT_PADDING),
-                  child: FaIcon(FontAwesomeIcons.syncAlt,
-                      color: Theme.of(context).primaryColorDark)),
-            ]),
+            backgroundColor: Theme.of(context).primaryColorDark,
+            title: Text(TITLE_PREF_APPBAR)),
         body: Container(
             constraints: BoxConstraints.expand(),
+            color: bgPrimaryColor,
             padding: EdgeInsets.all(DEFAULT_PADDING),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

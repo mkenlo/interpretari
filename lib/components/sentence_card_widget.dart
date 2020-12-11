@@ -9,11 +9,10 @@ class SentenceCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.symmetric(vertical: DEFAULT_PADDING),
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
         child: SizedBox(
-            height: 300.0,
+            height: 200.0,
             child: Container(
                 padding: EdgeInsets.all(DEFAULT_PADDING),
                 child: Center(
