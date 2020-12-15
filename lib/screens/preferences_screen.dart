@@ -44,9 +44,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
         },
         items: data.map<DropdownMenuItem>((lang) {
           return DropdownMenuItem<String>(
-            value: lang.name,
-            child: Text(lang.name),
-          );
+              value: lang.name, child: Text(lang.name));
         }).toList());
   }
 
@@ -74,10 +72,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
         });
   }
 
-  void _navigateToHomePage() {
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    }
+  void _navigateToNextPage() {
     Navigator.of(context).pushNamed(ROUTE_SIGNIN);
   }
 
@@ -99,7 +94,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    color: Theme.of(context).accentColor),
+                    color: Theme.of(context).accentColor)
               ]);
         });
   }
@@ -145,14 +140,12 @@ class PreferenceScreenState extends State<PreferenceScreen> {
     final doneButton = Container(
         padding: EdgeInsets.all(4.0),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColorDark,
-          borderRadius: BorderRadius.circular(30.0),
-        ),
+            color: Theme.of(context).primaryColorDark,
+            borderRadius: BorderRadius.circular(30.0)),
         child: FlatButton(
             onPressed: () {
-              //Permission.storage.isGranted.then((value) => createAppStorage());
               _setLanguagesPreferences().then((isLanguageSaved) {
-                if (isLanguageSaved) _navigateToHomePage();
+                if (isLanguageSaved) _navigateToNextPage();
               });
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -163,7 +156,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18.0))),
+                          fontSize: 18.0)))
             ])));
 
     return Scaffold(

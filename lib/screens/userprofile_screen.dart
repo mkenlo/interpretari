@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import "package:flutter/material.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config.dart';
 import '../models/user_model.dart';
+import '../res/colors.dart';
 import '../services/language_service.dart';
+import '../services/user_service.dart';
 import 'error_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -23,30 +22,13 @@ class UserProfileScreenState extends State<UserProfileScreen> {
 
   @override
   void initState() {
-    _getPreferredLanguage().then((values) {
+    getPreferredLanguage().then((values) {
       setState(() {
         preferredSourceLanguage = values[0] ?? defaultSourceLang;
         preferredTargetLanguage = values[1] ?? "";
       });
     });
     super.initState();
-  }
-
-  Future<User> _getProfileInfoFromPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return User(
-        username: prefs.getString("username") ?? "",
-        firstName: prefs.getString("firstName") ?? "",
-        lastName: prefs.getString("lastName") ?? "");
-  }
-
-  Future<List> _getPreferredLanguage() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return [
-      prefs.getString("sourceLanguage"),
-      prefs.getString("targetLanguage")
-    ];
   }
 
   void _setPreferredSourceLang(String preferredLang) async {
@@ -65,17 +47,6 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     setState(() {
       preferredTargetLanguage = preferredLang;
     });
-  }
-
-  void _doLogout() async {
-    /*final FacebookLogin facebookSignIn = new FacebookLogin();
-    if (await facebookSignIn.isLoggedIn) {
-      await facebookSignIn.logOut();
-
-      while (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
-    }*/
   }
 
   void _changeSourceLanguage() {
@@ -159,62 +130,51 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   _buildPreferencesContent(User profile) {
-    /*
-    final Widget profilePic = ClipRRect(
-        borderRadius: BorderRadius.circular(50.0),
-        child: Image.network(
-          profile.avatar,
-          width: 100.0,
-          height: 100.0,
-        ));
-*/
     final Widget name = ListTile(
+        leading: FaIcon(FontAwesomeIcons.user,
+            color: Theme.of(context).primaryColorDark),
         title: Text("${profile.fullName()}",
-            style: Theme.of(context).textTheme.headline),
+            style: Theme.of(context).textTheme.headline4),
         subtitle: Text(profile.username));
 
     final sourceLang = ListTile(
-      leading: Icon(Icons.language, color: Theme.of(context).primaryColorDark),
-      title: Text("Source Language"),
-      subtitle: Text(preferredSourceLanguage),
-      onTap: () {
-        _changeSourceLanguage();
-      },
-    );
+        leading:
+            Icon(Icons.language, color: Theme.of(context).primaryColorDark),
+        title: Text("Source Language"),
+        subtitle: Text(preferredSourceLanguage),
+        onTap: () {
+          _changeSourceLanguage();
+        });
 
     final targetLang = ListTile(
-      leading: Icon(Icons.translate, color: Theme.of(context).primaryColorDark),
-      title: Text("Target Language"),
-      subtitle: Text(preferredTargetLanguage),
-      onTap: () {
-        _changeTargetLanguage();
-      },
-    );
+        leading:
+            Icon(Icons.translate, color: Theme.of(context).primaryColorDark),
+        title: Text("Target Language"),
+        subtitle: Text(preferredTargetLanguage),
+        onTap: () {
+          _changeTargetLanguage();
+        });
 
     final loginStatus = ListTile(
-      leading:
-          Icon(Icons.exit_to_app, color: Theme.of(context).primaryColorDark),
-      title: Text("Logout",
-          style: TextStyle(color: Theme.of(context).primaryColorDark)),
-      onTap: () {
-        _doLogout();
-      },
-    );
+        leading:
+            Icon(Icons.exit_to_app, color: Theme.of(context).primaryColorDark),
+        title: Text("Logout",
+            style: TextStyle(color: Theme.of(context).primaryColorDark)),
+        onTap: () {
+          UserService().doLogout();
+          while (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+        });
 
     return Container(
-        child: ListView(children: [
-      //profilePic,
-      name,
-      sourceLang,
-      targetLang,
-      loginStatus
-    ]));
+        child: ListView(children: [name, sourceLang, targetLang, loginStatus]));
   }
 
   @override
   Widget build(BuildContext context) {
     final content = FutureBuilder<User>(
-      future: _getProfileInfoFromPreferences(),
+      future: UserService().getProfileInfoFromPreferences(),
       builder: (BuildContext context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
@@ -234,9 +194,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         appBar: AppBar(
             title: Text("Settings"),
             leading: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: FaIcon(FontAwesomeIcons.slidersH),
-            )),
-        body: content);
+                padding: const EdgeInsets.all(16.0),
+                child: FaIcon(FontAwesomeIcons.slidersH))),
+        body: Container(color: bgPrimaryColor, child: content));
   }
 }

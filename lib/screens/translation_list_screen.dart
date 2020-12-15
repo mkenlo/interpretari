@@ -1,11 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/translation_model.dart';
+import '../res/colors.dart';
+import '../res/dimensions.dart';
 import '../services/translation_service.dart';
+import '../services/user_service.dart';
 import 'error_screen.dart';
 
 class TranslationListScreen extends StatefulWidget {
@@ -16,23 +16,17 @@ class TranslationListScreen extends StatefulWidget {
 }
 
 class _TranslationListScreenState extends State<TranslationListScreen> {
-  String username;
+  int userId;
 
   @override
   void initState() {
     super.initState();
 
-    _getProfileInfo().then((username) {
+    UserService().getProfileInfoFromPreferences().then((user) {
       setState(() {
-        this.username = username;
+        this.userId = user.id;
       });
     });
-  }
-
-  Future<String> _getProfileInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString('username');
   }
 
   Widget _buildListWidget(data) {
@@ -41,10 +35,9 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
         itemBuilder: (context, index) {
           Translation item = data[index];
           return ListTile(
-            title: Text(item.sentence.text),
-            subtitle: Text(item.recordedOn),
-            trailing: Icon(Icons.play_circle_outline),
-          );
+              title: Text(item.sentence.text),
+              subtitle: Text(item.recordedOn),
+              trailing: Icon(Icons.play_circle_outline));
         });
   }
 
@@ -73,7 +66,7 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
   @override
   Widget build(BuildContext context) {
     final content = FutureBuilder(
-      future: fetchTranslation(username),
+      future: fetchTranslation(userId),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
@@ -95,10 +88,10 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
 
     return Scaffold(
         appBar: AppBar(
+            title: Text("Translations History"),
             leading: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: FaIcon(FontAwesomeIcons.language),
-        )),
-        body: Center(child: content));
+                padding: const EdgeInsets.all(DEFAULT_PADDING),
+                child: FaIcon(FontAwesomeIcons.language))),
+        body: Container(color: bgPrimaryColor, child: Center(child: content)));
   }
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../models/user_model.dart';
 import '../res/colors.dart';
 import '../res/dimensions.dart';
 import '../res/strings.dart';
+import '../services/user_service.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  List<String> categories = ["Sentences Book", "Translation History"];
   @override
   void initState() {
     super.initState();
@@ -20,75 +22,50 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String welcomeMsg = "Welcome, ";
+    final welcomeTxt = Container(
+        padding: EdgeInsets.all(DEFAULT_PADDING),
+        child: FutureBuilder<User>(
+          future: UserService().getProfileInfoFromPreferences(),
+          builder: (BuildContext context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Text(welcomeMsg + snapshot.data.firstName + "!",
+                  style:
+                      TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold));
+            }
+            return Text("Welcome",
+                style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold)); // unreachable
+          },
+        ));
+
+    final welcomeImg = SizedBox(
+        height: 300.0,
+        child: SvgPicture.asset("assets/images/undraw_welcoming.svg"));
+
+    final categoryCard = SizedBox(
+        height: 100.0,
+        child: Card(
+            child: ListTile(
+                leading: FaIcon(FontAwesomeIcons.fileAlt,
+                    size: 32.0, color: Theme.of(context).primaryColorDark),
+                onTap: () {
+                  Navigator.of(context).pushNamed(ROUTE_SENTENCES_LIST);
+                },
+                title: Padding(
+                    padding: const EdgeInsets.all(DEFAULT_PADDING),
+                    child: Text("Sentences Library")))));
+
     return Scaffold(
         appBar: AppBar(
             title: Text(APPNAME),
             leading: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: FaIcon(FontAwesomeIcons.home),
-            )),
+                padding: const EdgeInsets.all(16.0),
+                child: FaIcon(FontAwesomeIcons.home))),
         body: Container(
             color: bgPrimaryColor,
             padding: EdgeInsets.all(8.0),
-            child: ListView(
-              children: [
-                SizedBox(
-                    height: 100.0,
-                    child: Card(
-                        child: ListTile(
-                            leading: FaIcon(FontAwesomeIcons.fileAlt,
-                                size: 32.0,
-                                color: Theme.of(context).primaryColorDark),
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(ROUTE_SENTENCES_LIST);
-                            },
-                            title: Padding(
-                                padding: const EdgeInsets.all(DEFAULT_PADDING),
-                                child: Text(categories[0]))))),
-                SizedBox(
-                  height: 100.0,
-                  child: Card(
-                      child: ListTile(
-                          leading: FaIcon(FontAwesomeIcons.language,
-                              size: 32.0,
-                              color: Theme.of(context).primaryColorDark),
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed(ROUTE_TRANSLATIONS_LIST);
-                          },
-                          title: Padding(
-                              padding: const EdgeInsets.all(DEFAULT_PADDING),
-                              child: Text(categories[1])))),
-                )
-              ],
-            )));
+            child: ListView(children: [welcomeTxt, welcomeImg, categoryCard])));
   }
 }
-/*
-
-class CategoryCardWidget extends StatelessWidget {
-  final Widget categoryIcon;
-  final String categoryName;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150.0,
-      child: Card(
-          child: ListTile(
-              leading: FaIcon(FontAwesomeIcons.language,
-                  size: 64.0, color: Theme.of(context).primaryColorDark),
-              onTap: () {
-                Navigator.of(context).pushNamed(ROUTE_TRANSLATIONS_LIST);
-              },
-              title: Padding(
-                  padding: const EdgeInsets.all(DEFAULT_PADDING),
-                  child: Text(categoryName,
-                      style: Theme.of(context).textTheme.headline5)))),
-    );
-  }
-
-  CategoryCardWidget(this.categoryIcon, this.categoryName);
-}
-*/

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../res/dimensions.dart';
 import '../res/strings.dart';
+import '../services/user_service.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -12,91 +14,78 @@ class SignInScreen extends StatefulWidget {
 }
 
 class SignInScreenState extends State<SignInScreen> {
+  void showErrors(String errorMsg) {
+    showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              titleTextStyle: TextStyle(
+                  color: Theme.of(context).primaryColorDark,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0),
+              title: Text("Login Error"),
+              content: Text(errorMsg),
+              actions: <Widget>[
+                FlatButton(
+                    child: Text(LABEL_ACKNOW),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    color: Theme.of(context).accentColor)
+              ]);
+        });
+  }
+
   void _navigateToNextPage() {
-    /*if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    }*/
     Navigator.of(context).pushNamed(ROUTE_DASHBOARD);
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget facebookWidget = Container(
+    Widget facebookButton = Container(
         margin:
             EdgeInsets.symmetric(vertical: DEFAULT_PADDING, horizontal: 0.0),
         decoration: BoxDecoration(
             color: Theme.of(context).primaryColorDark,
             borderRadius: BorderRadius.circular(30.0)),
         child: ListTile(
-            onTap: () {
-              print("_doLogin");
+            onTap: () async {
+              final res = await UserService().fbLogin();
+              if (res < 0) {
+                showErrors("SERVER ERROR: Could not process login");
+              } else if (res == 0) {
+                showErrors("User cancelled the Login");
+              } else {
+                _navigateToNextPage();
+              }
             },
             leading: FaIcon(FontAwesomeIcons.facebook, color: Colors.white),
-            title: Text("Continue with Facebook",
+            title: Text("Login with Facebook",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 18.0))));
-    Widget nameInput = Container(
-        child: TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-                prefixIcon: Padding(
-                    child: FaIcon(FontAwesomeIcons.user, size: DEFAULT_PADDING),
-                    padding: EdgeInsets.all(DEFAULT_PADDING)),
-                border: OutlineInputBorder(),
-                labelText: 'FullName')),
-        padding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING));
-    Widget emailInput = Container(
-        child: TextField(
-          obscureText: false,
-          decoration: InputDecoration(
-              prefixIcon: Padding(
-                  child: FaIcon(FontAwesomeIcons.at, size: DEFAULT_PADDING),
-                  padding: EdgeInsets.all(DEFAULT_PADDING)),
-              border: OutlineInputBorder(),
-              labelText: 'Email'),
-        ),
-        padding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING));
-    Widget passwordInput = Container(
-        child: TextField(
-          obscureText: true,
-          obscuringCharacter: "*",
-          decoration: InputDecoration(
-              prefixIcon: Padding(
-                  child: FaIcon(FontAwesomeIcons.lock, size: DEFAULT_PADDING),
-                  padding: EdgeInsets.all(DEFAULT_PADDING)),
-              border: OutlineInputBorder(),
-              labelText: 'Password'),
-        ),
-        padding: EdgeInsets.symmetric(vertical: DEFAULT_PADDING));
+
     Widget signInButton = Container(
-        padding: EdgeInsets.all(DEFAULT_PADDING),
         decoration: BoxDecoration(
-            border:
-                Border.all(width: 2.0, color: Theme.of(context).accentColor),
+            border: Border.all(
+              width: 2.0,
+              //color: Theme.of(context).accentColor, // TODO Change back to acccent color when this button is enable
+              color: Colors.black54,
+            ),
             borderRadius: BorderRadius.circular(30.0)),
-        child: InkWell(
-            onTap: () {
-              print("_doLogin");
-            },
-            child: Center(
-                child: Text("Sign Up",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColorDark)))));
-    Widget content = Container(
-        padding: EdgeInsets.all(DEFAULT_PADDING),
-        child: ListView(
-          children: [
-            nameInput,
-            emailInput,
-            passwordInput,
-            signInButton,
-            LimitedBox(child: Center(child: Text("or")), maxHeight: 80.0),
-            facebookWidget
-          ],
-        ));
+        child: ListTile(
+            enabled: false,
+            leading: FaIcon(FontAwesomeIcons.envelope),
+            title: Text(
+              "Login with email",
+              style: TextStyle(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
+            )));
+
     return Scaffold(
         appBar: AppBar(
             leading: IconButton(
@@ -113,10 +102,17 @@ class SignInScreenState extends State<SignInScreen> {
             backgroundColor: Theme.of(context).primaryColorDark,
             elevation: 0.0),
         body: Container(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Expanded(child: content)],
-        )));
+            padding: EdgeInsets.all(DEFAULT_PADDING),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              // Placeholder for email_signin_widget
+              SizedBox(
+                  height: 300.0,
+                  child: SvgPicture.asset('assets/images/undraw_sign_in.svg')),
+              // TODO Change this placeholder widget with the email_signin_widget Or Activate Button
+              signInButton,
+              facebookButton
+            ])));
   }
 
   @override
