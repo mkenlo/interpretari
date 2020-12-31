@@ -13,4 +13,7 @@ class Sentence {
   static List<Sentence> asListFromJson(List<dynamic> json) {
     return json.map((i) => Sentence.fromJson(i)).toList();
   }
+
+  Map<String, dynamic> toJson() =>
+      {'sentence_id': id, 'sentence_text': text, 'sentence_lang': language};
 }

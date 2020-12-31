@@ -1,20 +1,18 @@
-import 'language_model.dart';
-import 'sentence_model.dart';
-import 'user_model.dart';
-
 class Translation {
-  User author;
+  int id;
+  String author;
 
-  Sentence sentence;
+  String sentence;
 
-  Language targetLanguage;
+  String targetLanguage;
 
   String audioFileName;
 
   String recordedOn;
 
   Translation(
-      {this.author,
+      {this.id,
+      this.author,
       this.sentence,
       this.targetLanguage,
       this.audioFileName,
@@ -22,14 +20,24 @@ class Translation {
 
   factory Translation.fromJson(Map<String, dynamic> json) {
     return Translation(
-        author: User.fromJson(json['author']),
-        targetLanguage: Language.fromJson(json['target_lang']),
-        sentence: Sentence.fromJson(json['sentence']),
-        audioFileName: json['audiofile'],
+        id: json['translation_id'],
+        author: json['author'],
+        targetLanguage: json['target_lang'],
+        sentence: json['sentence'],
+        audioFileName: json['audiofile'] ?? "",
         recordedOn: json['recorded_on']);
   }
 
   static List<Translation> asListFromJson(List<dynamic> json) {
     return json.map((i) => Translation.fromJson(i)).toList();
   }
+
+  Map<String, dynamic> toJson() => {
+        'translation_id': id,
+        'author': author,
+        'sentence': sentence,
+        'target_lang': targetLanguage,
+        'audiofile': audioFileName,
+        'recorded_on': recordedOn
+      };
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,12 @@ class PreferenceScreen extends StatefulWidget {
 }
 
 class PreferenceScreenState extends State<PreferenceScreen> {
-  String _preferredSourceLang;
-  String _preferredTargetLang;
+  Language _preferredSourceLang;
+  Language _preferredTargetLang;
   bool _micPermission = false;
   bool _storagePermission = false;
+  List<Language> targetLanguages = [];
+  List<Language> sourceLanguages = [];
 
   Widget _loadDropDownItems(List<Language> data, String languageType) {
     String hint =
@@ -43,8 +46,8 @@ class PreferenceScreenState extends State<PreferenceScreen> {
           });
         },
         items: data.map<DropdownMenuItem>((lang) {
-          return DropdownMenuItem<String>(
-              value: lang.name, child: Text(lang.name));
+          return DropdownMenuItem<Language>(
+              value: lang, child: Text(lang.name));
         }).toList());
   }
 
@@ -105,8 +108,10 @@ class PreferenceScreenState extends State<PreferenceScreen> {
       return false;
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('sourceLanguage', _preferredSourceLang);
-      await prefs.setString('targetLanguage', _preferredTargetLang);
+      await prefs.setString(
+          'sourceLanguage', json.encode(_preferredSourceLang));
+      await prefs.setString(
+          'targetLanguage', json.encode(_preferredTargetLang));
       return true;
     }
   }
@@ -181,13 +186,13 @@ class PreferenceScreenState extends State<PreferenceScreen> {
                           child: Text(LABEL_PREF_HEADER,
                               style: Theme.of(context).textTheme.headline5))),
                   Padding(
-                    padding: EdgeInsets.all(DEFAULT_PADDING),
-                    child: _buildLanguageDropDown("source"),
-                  ),
+                      padding: EdgeInsets.all(DEFAULT_PADDING),
+                      //child: _buildLanguageDropDown("source")),
+                      child: _loadDropDownItems(sourceLanguages, "source")),
                   Padding(
-                    padding: EdgeInsets.all(DEFAULT_PADDING),
-                    child: _buildLanguageDropDown("target"),
-                  ),
+                      padding: EdgeInsets.all(DEFAULT_PADDING),
+                      //child: _buildLanguageDropDown("target")),
+                      child: _loadDropDownItems(targetLanguages, "target")),
                   Expanded(
                       child: Center(
                           child: Text(LABEL_SET_PERMISSIONS,
@@ -197,5 +202,19 @@ class PreferenceScreenState extends State<PreferenceScreen> {
                       padding: EdgeInsets.all(DEFAULT_PADDING)),
                   doneButton
                 ])));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    filterLanguagesByType().then((languages) {
+      setState(() {
+        this.sourceLanguages = languages[0];
+        this.targetLanguages = languages[1];
+        _preferredSourceLang = languages[0][0];
+        _preferredTargetLang = languages[1][0];
+      });
+    });
   }
 }

@@ -26,19 +26,19 @@ class HomeScreenState extends State<HomeScreen> {
     final welcomeTxt = Container(
         padding: EdgeInsets.all(DEFAULT_PADDING),
         child: FutureBuilder<User>(
-          future: UserService().getProfileInfoFromPreferences(),
-          builder: (BuildContext context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Text(welcomeMsg + snapshot.data.firstName + "!",
-                  style:
-                      TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold));
-            }
-            return Text("Welcome",
-                style: TextStyle(
-                    fontSize: 32.0,
-                    fontWeight: FontWeight.bold)); // unreachable
-          },
-        ));
+            future: UserService().getProfileInfoFromPreferences(),
+            builder: (BuildContext context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.data != null) {
+                return Text(welcomeMsg + snapshot.data.firstName + "!",
+                    style:
+                        TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold));
+              }
+              return Text("Welcome",
+                  style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold)); // unreachable
+            }));
 
     final welcomeImg = SizedBox(
         height: 300.0,

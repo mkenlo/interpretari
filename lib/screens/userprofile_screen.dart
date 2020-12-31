@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import "package:flutter/material.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../config.dart';
+import '../models/language_model.dart';
 import '../models/user_model.dart';
 import '../res/colors.dart';
+import '../res/dimensions.dart';
+import '../res/strings.dart';
 import '../services/language_service.dart';
 import '../services/user_service.dart';
 import 'error_screen.dart';
@@ -17,32 +21,32 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class UserProfileScreenState extends State<UserProfileScreen> {
-  String preferredSourceLanguage = "";
-  String preferredTargetLanguage = "";
+  Language preferredSourceLanguage;
+  Language preferredTargetLanguage;
 
   @override
   void initState() {
     getPreferredLanguage().then((values) {
       setState(() {
-        preferredSourceLanguage = values[0] ?? defaultSourceLang;
-        preferredTargetLanguage = values[1] ?? "";
+        preferredSourceLanguage = values[0];
+        preferredTargetLanguage = values[1];
       });
     });
     super.initState();
   }
 
-  void _setPreferredSourceLang(String preferredLang) async {
+  void _setPreferredSourceLang(Language preferredLang) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("sourceLanguage", preferredLang);
+    prefs.setString("sourceLanguage", json.encode(preferredLang));
 
     setState(() {
       preferredSourceLanguage = preferredLang;
     });
   }
 
-  void _setPreferredTargetLang(String preferredLang) async {
+  void _setPreferredTargetLang(Language preferredLang) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("targetLanguage", preferredLang);
+    prefs.setString("targetLanguage", json.encode(preferredLang));
 
     setState(() {
       preferredTargetLanguage = preferredLang;
@@ -65,18 +69,16 @@ class UserProfileScreenState extends State<UserProfileScreen> {
               itemBuilder: (context, index) {
                 return InkWell(
                     onTap: () {
-                      _setPreferredSourceLang(snapshot.data[index].name);
+                      _setPreferredSourceLang(snapshot.data[index]);
                       Navigator.pop(context);
                     },
                     highlightColor: Theme.of(context).primaryColorLight,
                     child: ListTile(
-                      title: Text(snapshot.data[index].name),
-                      subtitle: Text(snapshot.data[index].code),
-                    ));
+                        title: Text(snapshot.data[index].name),
+                        subtitle: Text(snapshot.data[index].code)));
               });
-        } else {
+        } else
           return Center(child: CircularProgressIndicator());
-        }
       },
     );
 
@@ -105,7 +107,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
               itemBuilder: (context, index) {
                 return InkWell(
                     onTap: () {
-                      _setPreferredTargetLang(snapshot.data[index].name);
+                      _setPreferredTargetLang(snapshot.data[index]);
                       Navigator.pop(context);
                     },
                     highlightColor: Theme.of(context).primaryColorLight,
@@ -130,18 +132,24 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   _buildPreferencesContent(User profile) {
+    String fullName = "";
+    String username = "Not yet logged In";
+    if (profile != null) {
+      fullName = profile.fullName();
+      username = profile.username;
+    }
     final Widget name = ListTile(
         leading: FaIcon(FontAwesomeIcons.user,
             color: Theme.of(context).primaryColorDark),
-        title: Text("${profile.fullName()}",
-            style: Theme.of(context).textTheme.headline4),
-        subtitle: Text(profile.username));
+        title: Text(fullName,
+            style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold)),
+        subtitle: Text(username));
 
     final sourceLang = ListTile(
         leading:
             Icon(Icons.language, color: Theme.of(context).primaryColorDark),
         title: Text("Source Language"),
-        subtitle: Text(preferredSourceLanguage),
+        subtitle: Text(preferredSourceLanguage.name),
         onTap: () {
           _changeSourceLanguage();
         });
@@ -150,7 +158,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         leading:
             Icon(Icons.translate, color: Theme.of(context).primaryColorDark),
         title: Text("Target Language"),
-        subtitle: Text(preferredTargetLanguage),
+        subtitle: Text(preferredTargetLanguage.name),
         onTap: () {
           _changeTargetLanguage();
         });
@@ -158,13 +166,18 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     final loginStatus = ListTile(
         leading:
             Icon(Icons.exit_to_app, color: Theme.of(context).primaryColorDark),
-        title: Text("Logout",
-            style: TextStyle(color: Theme.of(context).primaryColorDark)),
+        title: Text((profile != null) ? "Logout" : "Login",
+            style: TextStyle(
+                color: Theme.of(context).primaryColorDark,
+                fontWeight: FontWeight.bold)),
         onTap: () {
-          UserService().doLogout();
-          while (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
+          if (profile != null) {
+            UserService().doLogout();
+            while (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          } else
+            Navigator.of(context).pushNamed(ROUTE_SIGNIN);
         });
 
     return Container(
@@ -194,7 +207,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         appBar: AppBar(
             title: Text("Settings"),
             leading: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(DEFAULT_PADDING),
                 child: FaIcon(FontAwesomeIcons.slidersH))),
         body: Container(color: bgPrimaryColor, child: content));
   }

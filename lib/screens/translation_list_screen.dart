@@ -16,7 +16,7 @@ class TranslationListScreen extends StatefulWidget {
 }
 
 class _TranslationListScreenState extends State<TranslationListScreen> {
-  int userId;
+  int userId = 0;
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
 
     UserService().getProfileInfoFromPreferences().then((user) {
       setState(() {
-        this.userId = user.id;
+        this.userId = user.id ?? 0;
       });
     });
   }
@@ -35,7 +35,7 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
         itemBuilder: (context, index) {
           Translation item = data[index];
           return ListTile(
-              title: Text(item.sentence.text),
+              title: Text(item.sentence),
               subtitle: Text(item.recordedOn),
               trailing: Icon(Icons.play_circle_outline));
         });
@@ -43,7 +43,7 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
 
   Widget _noDataWidget() {
     return Container(
-        color: Color(0xFFF3F8F7),
+        color: bgPrimaryColor,
         padding: EdgeInsets.all(16.0),
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -51,15 +51,11 @@ class _TranslationListScreenState extends State<TranslationListScreen> {
               child: Icon(Icons.data_usage,
                   size: 128.0, color: Theme.of(context).accentColor)),
           Expanded(
-              child: Column(
-            children: <Widget>[
-              Text(
-                "You haven't recorded anything yet",
+              child: Column(children: <Widget>[
+            Text("You haven't recorded anything yet",
                 style: TextStyle(color: Theme.of(context).hintColor),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ))
+                textAlign: TextAlign.center)
+          ]))
         ]));
   }
 

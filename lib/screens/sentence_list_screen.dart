@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import "../models/sentence_model.dart";
 import '../res/colors.dart';
 import '../res/strings.dart';
+import '../services/language_service.dart';
 import "../services/sentence_service.dart";
 import 'error_screen.dart';
 
@@ -21,15 +21,10 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
 
-  Future<String> _getLanguagesFromPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("sourceLanguage");
-  }
-
   Future<void> _refreshList() async {
-    _getLanguagesFromPreferences().then((sourceLanguage) {
+    getPreferredLanguage().then((languages) {
       setState(() {
-        sentences = fetchSentences("language=$sourceLanguage");
+        sentences = fetchSentences("language=${languages[0].name}");
       });
     });
   }
@@ -93,9 +88,9 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
   void initState() {
     super.initState();
 
-    _getLanguagesFromPreferences().then((sourceLanguage) {
+    getPreferredLanguage().then((languages) {
       setState(() {
-        sentences = fetchSentences("language=$sourceLanguage");
+        sentences = fetchSentences("language=${languages[0].name}");
       });
     });
   }
@@ -109,10 +104,6 @@ class _SentenceListScreenState extends State<SentenceListScreen> {
         key: _refreshIndicatorKey,
         onRefresh: () => _refreshList());
     return Scaffold(
-        appBar: appBar,
-        body: Container(
-          child: content,
-          color: bgPrimaryColor,
-        ));
+        appBar: appBar, body: Container(child: content, color: bgPrimaryColor));
   }
 }

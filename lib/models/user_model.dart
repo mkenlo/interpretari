@@ -24,9 +24,20 @@ class User {
         lastName: json['last_name']);
   }
 
+  static List<User> asListFromJson(List<dynamic> json) {
+    return json.map((i) => User.fromJson(i)).toList();
+  }
+
   Map<String, dynamic> toJson() => {
+        'id': id,
+        'email': email,
         'username': username,
         'first_name': firstName,
         'last_name': lastName,
       };
+
+  @override
+  String toString() {
+    return 'User{id: $id, email: $email, username: $username, firstName: $firstName, lastName: $lastName}';
+  }
 }

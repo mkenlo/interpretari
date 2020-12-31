@@ -1,6 +1,7 @@
 const String appName = "Interpretari";
 
-const String apiAuthorityUrl = "http://192.168.0.58:8000";
+const String apiAuthorityUrl =
+    "http://interpretari-env.eba-bjjtu5ne.us-east-1.elasticbeanstalk.com/";
 
 const String defaultTargetLang = "Yemba";
 

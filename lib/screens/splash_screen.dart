@@ -1,4 +1,4 @@
-import 'dart:async' show Timer;
+import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +17,9 @@ class SplashScreenState extends State<SplashScreen> {
     return Scaffold(
         backgroundColor: Theme.of(context).primaryColorDark,
         body: Center(
-          child: Text(APPNAME,
-              style: GoogleFonts.patuaOne(color: Colors.white, fontSize: 36.0)),
-        ));
+            child: Text(APPNAME,
+                style: GoogleFonts.patuaOne(
+                    color: Colors.white, fontSize: 36.0))));
   }
 
   void launchNextPage() {

@@ -28,30 +28,6 @@ class UserService {
     return 0;
   }
 
-  Future<int> createUserProfile(User user) async {
-    Map<String, String> requestHeaders = {
-      'Content-type': 'application/json',
-      'Accept': 'application/json'
-    };
-    final response = await http.post(url,
-        body: json.encode({
-          "username": user.username,
-          "email": user.email,
-          "first_name": user.firstName,
-          "last_name": user.lastName
-        }),
-        headers: requestHeaders);
-    final jsonResponse = json.decode(response.body);
-    if (response.statusCode != 200) {
-      print("create user, but Exception");
-      print(jsonResponse);
-      throw Exception("error while creating new user");
-    } else {
-      print("create user");
-      return jsonResponse['id'];
-    }
-  }
-
   void doLogout() async {
     final FacebookLogin facebookSignIn = new FacebookLogin();
     if (await facebookSignIn.isLoggedIn) {
@@ -72,7 +48,6 @@ class UserService {
         "https://graph.facebook.com/v4.0/me?fields=$queryFields&access_token=$accessToken");
     final jsonProfile = json.decode(graphResponse.body);
 
-    print(jsonProfile);
     return new User(
         email: jsonProfile['email'],
         firstName: jsonProfile['first_name'],
@@ -81,26 +56,57 @@ class UserService {
   }
 
   void saveProfileIntoPreferences(User userProfile) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if (!prefs.containsKey('username')) {
-      // first install
-      await prefs.setString('username', userProfile.username);
-      await prefs.setString('firstName', userProfile.firstName);
-      await prefs.setString('lastName', userProfile.lastName);
-
-      int userId = await createUserProfile(userProfile);
-      await prefs.setString('userId', userId.toString());
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      User user = await findUserProfile(userProfile.username);
+      if (user == null) {
+        // first login
+        user = await createUserProfile(userProfile);
+      }
+      await prefs.setString("userProfile", json.encode(user));
+    } on Exception catch (e) {
+      // TODO
     }
+  }
+
+  Future<User> createUserProfile(User user) async {
+    Map<String, String> requestHeaders = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    };
+    final response = await http.post(url,
+        body: json.encode({
+          "username": user.username,
+          "email": user.email,
+          "first_name": user.firstName,
+          "last_name": user.lastName
+        }),
+        headers: requestHeaders);
+    final jsonResponse = json.decode(response.body);
+    if (response.statusCode != 201) {
+      throw Exception("Error while creating new user");
+    } else
+      return User.fromJson(jsonResponse);
   }
 
   Future<User> getProfileInfoFromPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    final user = prefs.getString("userProfile");
+    if (user != null)
+      return User.fromJson(json.decode(user));
+    else
+      return null;
+  }
 
-    return User(
-        id: int.parse(prefs.getString("userId") ?? "0"),
-        username: prefs.getString("username") ?? "",
-        firstName: prefs.getString("firstName") ?? "",
-        lastName: prefs.getString("lastName") ?? "");
+  Future<User> findUserProfile(String username) async {
+    final response = await http.get('$url?username=$username');
+
+    if (response.statusCode == 200) {
+      final results = User.asListFromJson(json.decode(response.body));
+      if (results.length > 0) return results.first;
+    } else {
+      throw Exception('Failed to load Data');
+    }
+    return null;
   }
 }
