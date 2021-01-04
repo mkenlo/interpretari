@@ -1,11 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../res/dimensions.dart';
 import '../res/strings.dart';
 
 class OnBoardingScreen extends StatelessWidget {
+  void launchNextPage(BuildContext context) {
+    SharedPreferences.getInstance().then((prefInstance) {
+      if (prefInstance.containsKey("sourceLanguage") ||
+          prefInstance.containsKey("targetLanguage")) {
+        Navigator.of(context).pushNamed(ROUTE_DASHBOARD);
+      } else {
+        Navigator.of(context).pushNamed(ROUTE_PREFS);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget getStartedButton = Container(
@@ -16,7 +28,7 @@ class OnBoardingScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(30.0)),
         child: InkWell(
             onTap: () {
-              Navigator.of(context).pushNamed(ROUTE_PREFS);
+              launchNextPage(context);
             },
             child: Center(
                 child: Text("Get Started",
@@ -26,6 +38,7 @@ class OnBoardingScreen extends StatelessWidget {
                         color: Theme.of(context).accentColor)))));
 
     return Scaffold(
+        backgroundColor: Theme.of(context).primaryColorDark,
         body: Container(
             padding: EdgeInsets.fromLTRB(
                 DEFAULT_PADDING, 100.0, DEFAULT_PADDING, DEFAULT_PADDING),
@@ -38,7 +51,7 @@ class OnBoardingScreen extends StatelessWidget {
                   flex: 3),
               Expanded(
                   flex: 4,
-                  child: Text("app slogan",
+                  child: Text("", //TODO Add App Slogan Here
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24.0,

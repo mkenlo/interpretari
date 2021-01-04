@@ -7,7 +7,6 @@ import 'screens/onboarding_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/sentence_list_screen.dart';
 import 'screens/signin_screen.dart';
-import 'screens/splash_screen.dart';
 import 'screens/translation_list_screen.dart';
 import 'screens/translation_screen.dart';
 import 'screens/userprofile_screen.dart';
@@ -27,8 +26,6 @@ class RouteGenerator {
             builder: (_) => TranslationScreen(sentence: args));
       case ROUTE_USERPROFILE:
         return MaterialPageRoute(builder: (_) => UserProfileScreen());
-      case ROUTE_SPLASH:
-        return MaterialPageRoute(builder: (_) => SplashScreen());
       case ROUTE_SIGNIN:
         return MaterialPageRoute(builder: (_) => SignInScreen());
       case ROUTE_TRANSLATIONS_LIST:

@@ -17,12 +17,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Interpretari App',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primarySwatch: Colors.deepPurple,
+          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
+          visualDensity: VisualDensity.adaptivePlatformDensity),
       home: PreferenceScreen(),
-      initialRoute: ROUTE_SPLASH,
+      initialRoute: ROUTE_ONBOARDING,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
