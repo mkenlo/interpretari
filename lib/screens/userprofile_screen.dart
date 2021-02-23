@@ -170,9 +170,9 @@ class UserProfileScreenState extends State<UserProfileScreen> {
             style: TextStyle(
                 color: Theme.of(context).primaryColorDark,
                 fontWeight: FontWeight.bold)),
-        onTap: () {
+        onTap: () async {
           if (profile != null) {
-            UserService().doLogout();
+            await UserService().doLogout();
             while (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
