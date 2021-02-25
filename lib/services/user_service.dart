@@ -66,6 +66,7 @@ class UserService {
       }
       await prefs.setString("userProfile", json.encode(user));
     } on Exception catch (e) {
+      print(e.toString());
       // TODO
     }
   }
