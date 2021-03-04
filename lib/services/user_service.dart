@@ -29,7 +29,8 @@ class UserService {
   }
 
   void doLogout() async {
-    final FacebookLogin facebookSignIn = new FacebookLogin();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("userProfile", null);
     if (await facebookSignIn.isLoggedIn) {
       await facebookSignIn.logOut();
     }
@@ -65,6 +66,7 @@ class UserService {
       }
       await prefs.setString("userProfile", json.encode(user));
     } on Exception catch (e) {
+      print(e.toString());
       // TODO
     }
   }

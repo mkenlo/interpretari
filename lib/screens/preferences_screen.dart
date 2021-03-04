@@ -51,7 +51,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
         }).toList());
   }
 
-  Widget _buildLanguageDropDown(String languageType) {
+  /* Widget _buildLanguageDropDown(String languageType) {
     String queryFilter =
         (languageType == "source") ? "type=foreign" : "type=local";
     return FutureBuilder(
@@ -74,6 +74,7 @@ class PreferenceScreenState extends State<PreferenceScreen> {
           return null;
         });
   }
+*/
 
   void _navigateToNextPage() {
     Navigator.of(context).pushNamed(ROUTE_SIGNIN);
